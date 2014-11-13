@@ -2,117 +2,127 @@
 # Finds min/max in array in 3n/2 comparisons
 # Takes 2 numbers, put larger of 2 in top half of array, smaller of 2 in bottom half
 # Guarantees MAX to be in top half of array and MIN to be in bottom half.
+# Updated to 1.1
 
 
 
-			.data
-N:			.word 5				#num elements in array
-X:			.word 1,4,6,2,-3	#Array thing
-MIN:		.word 0
-MAX:		.word 0
-
+		.data
+N:		.word 5						#num elements in array
+X:		.word -5,6,2,0,7			#array
+MIN:	.word 0
+MAX:	.word 0
 A:		.asciiz "Max: "
 B:		.asciiz "\nMin: "
 
-			.globl main
-			.text
+		.globl main
+		.text
 
-			
+main:	la $t1, X;					#load array into t1
+		lw $t0,	N;					#load number of elements into t0
+		addi $t2, $zero, 1;			#count starts at 1
+		lw $t8, 0($t1);				#initialize temp MAX as first in array.
+		lw $t9, 0($t1);				#initialize temp MIN as first in array.
 
-main:		lw $t1, X;
-			sw $t1,MAX;					#set max and min as first element of array
-			sw $t1,MIN;
-			lw $t2, N;					#load num elements into t2
-			lw $t7, N;					#load num elements into t7
-			addi $t7, $t2,-1;			#subtract t7 by 1;
-			add $t7, $t7,$t7;			#t7 x4;
-			add $t7, $t7,$t7;			#t7 = pos of last entry in array relative to 0.
-			add $t4, $t1, $t7;			#t4 is set to the last entry in the array.
-			lw $t3, 0($t4);				#set t3 to last entry in array
-			lw $t8, 0($zero);			#initialize number of comparisons made (basically N/2) to 0
-			
-sortloop:	slt $t4, $t1,$t3;			#set $t4 = 1 if t1 < t3
-			beq $zero, $t4, swap;		#go to swap if t1 is larger or equal to t4
-			j Next1;
+#Past initialization
+		
+		lw $t3, 0($t1);				#load first value of array into t3
+		lw $t4, 4($t1);				#load second value of array into t4
+		
+		slt $t5, $t3, $t4;			#t5 = 1 if t3 < t4 else 0
+		beq $zero, $t5, tSmall;		#if t5 = 0, t4 is smaller. branch to method.
+									#else t3 is smaller.
+		add $t8, $t4, $zero;		#set local MAX to t4 (bigger)
+		add $t9, $t3, $zero;		#set local MIN to t3 (smaller)
+		j Next1;
+		
+tSmall: add $t8, $t3, $zero;		#set local MAX to t3 (bigger)
+		add $t9, $t4, $zero;		#set local MIN to t4 (smaller)
+		j Next1;
 
-#Swap function used if t1 is larger than t3
-swap:		lw $t4, 0($t1);				#temp = t1;
-			lw $t1, 0($t3);				#t1 = t3;
-			lw $t3, 0($t4);				#t3 = temp;
-			addi $t8, $t8,1;			#increment count by 1
-			j Next1;
-			
+Next1:	addi $t1, $t1, 8;			#set next pointer (2 bytes down)
+		addi $t2, $t2, 2;			#count++
+		
+#Looping now
 
+loops:	beq	$t2, $t0, loopDone;		#if count = N, done
+		slt $t5, $t2,$t0;			#t5 = 1 if count < N else 0
+		beq $zero, $t5, loopDone;	#if count > N, done;
+		lw $t3, 0($t1);				#load first value into t3
+		lw $t4, 0($t1);				#load second value into t4
+		slt $t5, $t3, $t4;			#t5 = 1 if t3 < t4 else 0
+		beq $zero, $t5, oBig;		#if 0, then first value (t3) is bigger
+		j oSmall;					#if 1, then second value (t4) is bigger
 
-Next1:		addi $t1, $t1, 4;				#load next number into t1
-			addi $t3, $t3, -4;				#load next number into t3 (from the bottom)
-checkdone:	sub $t6, $t2,$t8;				#N is even case. Subtract count from N.		
-			beq $t6, $t8, done1;			#N is even case. If result = count, move on.
-			beq $t1, $t3, done1;			#N is odd case. t1 at same place t3 is, move on.
-			jal sortloop;					#loop back to continue sorting
-
-#Precon: Data has been sorted into top min and bottom max array.
-#Beginning to run through min list 
-done1:		lw $t4, X;					#load beginning into t1
-			sw $t6, 0($zero);			#clear t6 to use as temp
-			add $t6, $t1, $t8;			#t6 set as last entry of min list
-			lw $t8, 0($t8);				#put t8 at end of min list
-minloop:	beq $t4, $t8, done2;		#if t1 is at end of min list, move on.
-			lw $t6, MIN;				#Load current MIN into t6
-			slt $t5, $t6, $t4;			#set $t5 = 1 if MIN < t4;
-			beq $zero, $t5,MinA;		#goto MinA swap process if $t5 is zero (since t1 is less than MIN)
-			j Next2;
-			
-MinA:		sw $t4, MIN;				#put t1 into MIN, since it is smaller than MIN
-			j Next2;
-			
-Next2:		addi $t4, $t4,4;			#load next number into t1
-			j minloop;
-			
-done2:		sw $t4, 0($t3);				#Store MIN into t3
-			lw $t8, 0($t7);			#Set t8 to last element in array
-										#t1 already at beginning of max list (count-1); no need to initialize
-maxloop:	beq $t4, $t8, done3;		#if t4 is at the end of the max list, move on.
-			lw $t6, MAX;				#Load current MAX into t6
-			slt $t5, $t4, $t6;			#set $t5 = 1 if $t4 < MAX
-			beq $zero, $t5,MaxA;		#goto MaxA, since $t4 is  greater than MAX
-			j Next3;
-			
-MaxA: 		sw $t4, MAX;				#put t1 into MAX, since it is larger than MAX
-			j Next3;
-			
-Next3:		addi $t4, $t4,4;			#load next number into t1
-			j maxloop;
-
-			
-			
-#Done with process. Just output stuff.
-done3:		sw $t4, 0($t2);				#Store MAX into t3;
-
-			li	$v0, 4;
-			la	$a0, A;
-			syscall;
-	
-			li	$v0, 1;
-			add	$a0, $t2, $zero	;		#Print MAX
-			syscall;
-			
-			li	$v0, 4;
-			la	$a0, B;
-			syscall;
-	
-			li	$v0, 1;
-			add	$a0, $t3, $zero;		#Print MIN
-			syscall;
-	
-			li $v0, 10;					#End program
-			syscall;
+#t3 > t4
+oBig:	slt $t5, $t3, $t8;			#t5 = 1 if t3 < MAX, else 0
+		beq $zero, $t5, rMax1;		#if t3 > MAX, go to replace max
+		j cMin1;						#else move on;
+rMax1:	add $t8, $t3, $zero;		#set local MAX to t3 (new MAX)
+		j cMin1;
+cMin1:	slt $t5, $t9, $t4;			#t5 = 1 if MIN < t4, else 0
+		beq $zero, $t5, rMin1;		#if t4 < MIN, go to replace min
+		j checkd;					#else move on;
+rMin1:	add $t9, $t4, $zero;		#set local MIN to t4 (new MIN)
+		j checkd;					
 
 
+#t3 < t4
+oSmall:	slt $t5, $t4, $t8;			#t5 = 1 if t4 < MAX, else 0
+		beq $zero, $t5, rMax2;		#if t4 > MAX, go to replace max
+		j cMin2;					#else move on
+rMax2:	add $t8, $t4, $zero;		#set local MAX to t4 (new MAX)
+		j cMin2;
+cMin2:	slt $t5, $t9, $t3;			#t5 = 1 if MIN < t3, else 0
+		beq $zero, $t5, rMin2;		#if t3 < MIN, go to replace min
+		j checkd;					#else move on;
+rMin2:	add $t9, $t3, $zero;		#set local MIN to t3 (new MIN)
+		j checkd;
+		
+checkd: addi $t1, $t1, 8;			#set next pointer (2 bytes down)
+		addi $t2, $t2, 2;			#count++
+
+loopDone:
+		
+#N is odd check
+		andi $t7, $t0, 1;			#t7 = 0 if N is even, else 1
+		beq $t7, $zero, skip;		#if t7 = 0, no need to check final number
+									#else, check final number
+		lw $t3, 0($t1);				#load last element into t3
+		slt $t5, $t3, $t8;			#t5 = 1 if t3 < MAX, else 0
+		beq $zero, $t5, rMax3;		#if t3 > MAX, go to replace max
+		j cMin3;					#else move on
+rMax3:	add $t8, $t3, $zero;		#set local MAX to t3 (new MAX)
+		j cMin3;
+cMin3:	slt $t5, $t9, $t3;			#t5 = 1 if MIN < t3, else 0
+		beq $zero, $t5, rMin3;		#if t3 < MIN, go to replace min
+		j skip;						#else move on
+rMin3:	add $t9, $t3, $zero;		#set local MIN to t3 (new MIN)
+		j skip;
+
+skip:
 
 
+#Saving to memory
+		sw		$t8, MAX;			#store MAX to memory
+		sw		$t9, MIN;			#store MIN to memory
 
+#Printing to console
+		li	$v0, 4
+		la	$a0, A
+		syscall
+		
+		li	$v0, 1
+		add	$a0, $t8, $zero
+		syscall
 
-
-
-
+		li	$v0, 4
+		la	$a0, B
+		syscall
+		
+		li	$v0, 1
+		add	$a0, $t9, $zero
+		syscall
+		
+#System end
+		li $v0, 10
+		syscall
