@@ -1,8 +1,18 @@
+####################################################
+# Vincent "Styxx" Chang
+# Finds MIN/MAX numbers in array in 3n/2 comparisons
+# Given array and number of elements in array
+# Compares 2 numbers at a time
+# Compares larger of 2 to MAX, smaller of 2 to MIN
+####################################################
+
+
+
 		.data
 N:		.word 5						#num elements in array
 X:		.word -5,6,2,0,7				#array
 MIN:		.word 0
-MAX:	.	word 0
+MAX:		.word 0
 A:		.asciiz "Min: "
 B:		.asciiz "\nMax: "
 
