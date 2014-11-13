@@ -1,3 +1,10 @@
+# Initial idea for Project 1
+# Finds min/max in array in 3n/2 comparisons
+# Takes 2 numbers, put larger of 2 in top half of array, smaller of 2 in bottom half
+# Guarantees MAX to be in top half of array and MIN to be in bottom half.
+
+
+
 			.data
 N:			.word 5				#num elements in array
 X:			.word 1,4,6,2,-3	#Array thing
