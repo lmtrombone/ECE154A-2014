@@ -2,7 +2,7 @@
 
 
 
-// Example 11.4 in the textbook.
+## Example 11.4 in the textbook. ##
 shamu:  move  $v0,$zero               # initialize Hi to 0
         move  $v1,$zero               # initialize Lo to 0
         addi  $t2,$zero,32            # initialize repetition counter to 32
