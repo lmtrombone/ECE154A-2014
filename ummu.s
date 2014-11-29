@@ -13,7 +13,7 @@ mloop:  add   $t0,$zero,$zero         # set carry-out to 0 in case of no add
         slt   $t0,$v0,$a0             # form carry-out of addition in $t0
 noadd:  add   $t1,$v0,$zero           # copy ($v0) into $t1
         srl   $v0,1                   # halfe the unsigned value in $v0
-        sub   $t1,$t1,$v0             $ subtract ($v0) from ($t1) twice to
+        sub   $t1,$t1,$v0             # subtract ($v0) from ($t1) twice to
         sub   $t1,$t1,$v0             # obtain LSB of Hi in $t1
         sll   $t0,$t0,31              # carry-out converted to 1 in MSB of $t0
         addu  $v0,$v0,$t0             # right-shifted $v0 corrected
