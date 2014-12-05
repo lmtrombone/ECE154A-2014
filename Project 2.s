@@ -1,4 +1,8 @@
+# Exponentiality.
+# [insert code here]
+
 ####################
+# Vincent "Styxx" Chang
 # Write a MicroMIPS assembly language program to implement the computation of part b, using the procedure of
 # part c and limiting yourself to the same instructions specified in part c. Run your program on at least 10 different
 # test triples (a, b, p), the first five of which are specified under "Sample assembly file" below. The complete
