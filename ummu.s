@@ -30,9 +30,22 @@ noadd:  add   $t1,$v0,$zero           # copy ($v0) into $t1
         srl   $v1,1                   # halve the unsigned value in $v1
         sll   $t1,$t1,31              # LSB of Hi converted to 1 in MSB of $t1
         add   $v1,$v1,$t1             # right-shifted $v1 corrected
+        
+modz:   slt   $t6,$v1,$a2
+        bne   $t6,$0,donez;
+        sub   $v1,$v1,$a2;
+        j donez;
+donez:
         addi  $t2,$t2,-1              # decrement repitition counter by 1
         bne   $t2,$zero,mloop         # if counter > 0, repeat multiply loop
         jr    $ra                     # return to calling program
+
+
+
+
+
+
+
 
 ## Example 11.4 in the textbook. ##
 shamu:  move  $v0,$zero               # initialize Hi to 0
