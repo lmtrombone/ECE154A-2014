@@ -1,8 +1,18 @@
 
-
+# mod both the base ($a0) and the exponent ($a1) with mod ($a2) before multiplying out.
 ummu:   add   $v0,$zero,$zero         # initialize Hi to 0
         add   $v0,$zero,$zero         # initialize Lo to 0
         addi  $t2,$zero,32            # initialize repetition counter to 32
+        
+modbase:slt   $t7,$a0,$a2             # set ($t7) to 1 if base < mod
+        bne   $t7,$0,modexp           # if base < mod, move on
+        sub   $a0,$a0,$a2             # else, subtract base by mod and repeat
+        j modbase
+modexp: slt   $t8,$a1,$a2             # set ($t8) to 1 if exponent < mod
+        bne   $t8,$0,mloop            # if exponent < mod, move on
+        sub   $a1,$a1,$a2             # else, subtract exponent by mod and repeat
+        j modexp
+        
 mloop:  add   $t0,$zero,$zero         # set carry-out to 0 in case of no add
         add   $t0,$a1,$zero           # copy ($a1) into $t1
         srl   $a1,1                   # half the unsigned value in $a1
