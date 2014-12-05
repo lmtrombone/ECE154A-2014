@@ -5,8 +5,8 @@
 	    .data
 N:	    .word 10						# number of test cases supplied; at least 10
 A:	    .word 5,25,9,12345,54321,... 			# parameter A in (A^B) mod P; add 5 or more test cases
-B:	    .word 0,16,8,54321,10000,... 			# parameter B in (A^B) mod P; add 5 or more test cases
-P:	    .word 8,13,2,10000,65535,... 			# parameter P in (A^B) mod P; add 5 or more test cases
+B:	    .word 3,16,8,54321,10000,... 			# parameter B in (A^B) mod P; add 5 or more test cases
+P:	    .word 7,13,2,10000,65535,... 			# parameter P in (A^B) mod P; add 5 or more test cases
 C:	    .word 1,1,1,1,1,... 				# results of test cases 
 	    .globl main
 	    .text
@@ -22,9 +22,9 @@ main:	    la  $s0, A                          # Load A array (base)
             # Past initialization
             
 start:      #For each test case
-            lw $t0, $s4($s0) 			#Put A in $t0
-            lw $t1, $s4($s1)			#Put B in $t1
-            lw $t2, $s4($s2)			#Put C in $t2
+            lw $t0, 0($s0) 			#Put A in $t0
+            lw $t1, 0($s1)			#Put B in $t1
+            lw $t2, 0($s2)			#Put C in $t2
             #Put result in $t3
                 
             addi $s4, $0, 16                    # set bit counter to MSB
@@ -137,7 +137,7 @@ LOOP:	    addi $t4, $t5, 0				# initializes counter
 	    srl $t1, $t1, 1				# implements shift to right
 	    and $t6, $t1, 1				# checks if bit is a 1
 	    bne $t7, $zero, BIS1			# checks value of $t6
-	    subi $t4, $t4, 1				# decrement counter
+	    addi $t4, $t4, -1				# decrement counter
 	    slt $s7, $0, $t4				# check if for loop ends; if 0 < $t4, $s7 = 1
 	    bne $s7, $0, LOOP				# if 0 < $t4, then restart loop
 	    j RET					# if 0 = $t4, then end loop
@@ -146,14 +146,15 @@ BIS1:	    and $t6, $s8, 1				# check if y is odd
 	    beq $t6, $0, YIS0				# if y is 0
 	    bne $t6, $0, YIS1				# if y is 1
 	    
-YIS1:	    add $t6, $t1, $s9				# if y is 1, add x to y
+YIS1:	    add $t6, $t0, $0				# if y is 1, set y = x
 	    j LOOP
 
 YIS0:	    jal ummu					# if y is 0, y = y * x (mod m)
 	    j LOOP
 	    
 RET:	    # return y ($t6 for now)
-	    sw $t6, $s4($s5)
+	    sw $t6, 0($s5)
+	    add $v1, $t6, $zero
 	    
 	    #increment test case counter ($s4)
 	    addi $s4, $s4, 4;
