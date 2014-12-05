@@ -158,6 +158,11 @@ RET:	    # return y ($t6 for now)
 	    #increment test case counter ($s4)
 	    addi $s4, $s4, 4;
 	    
+	    ##### Need to figure out how to go betwen test cases
+	    ##### As well as figuring out when to stop after all test cases have been completed
+	    ##### (N == $s4)
+	    
+	    
             # for (i = 0; i < 15; i++)
                 # x = x * x % m
                 # if (B[i] == 1)
