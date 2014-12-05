@@ -173,7 +173,9 @@ RET:	    # return y ($t6 for now)
             #return y
             
             
-
+#System end
+		li $v0, 10
+		syscall
 
 
 ummu: 
