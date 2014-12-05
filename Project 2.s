@@ -19,7 +19,7 @@ C:	    .word 1,1,1,1,1,... 				    # results of test cases
 		.globl main
 		.text
 		
-main:		la  $s0, A                          # Load base array
+main:	    la  $s0, A                          # Load base array
             la  $s1, B                          # Load exponent array
             la  $s2, P                          # Load modding array
             la  $t0, N                          
@@ -28,7 +28,7 @@ main:		la  $s0, A                          # Load base array
             
             # Past initialization
             
-            #For each test case
+start:          #For each test case
                 #Put A in $t0
                 #Put B in $t1
                 #Put P in $t2
