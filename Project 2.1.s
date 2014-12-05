@@ -5,8 +5,8 @@
 	    .data
 N:	    .word 10						# number of test cases supplied; at least 10
 A:	    .word 5,25,9,12345,54321,... 			# parameter A in (A^B) mod P; add 5 or more test cases
-B:	    .word 3,16,8,54321,10000,... 			# parameter B in (A^B) mod P; add 5 or more test cases
-P:	    .word 7,13,2,10000,65535,... 			# parameter P in (A^B) mod P; add 5 or more test cases
+B:	    .word 0,16,8,54321,10000,... 			# parameter B in (A^B) mod P; add 5 or more test cases
+P:	    .word 8,13,2,10000,65535,... 			# parameter P in (A^B) mod P; add 5 or more test cases
 C:	    .word 1,1,1,1,1,... 				# results of test cases 
 	    .globl main
 	    .text
